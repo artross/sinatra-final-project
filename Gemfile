@@ -9,6 +9,7 @@ gem 'rake'
 gem 'pry'
 gem 'thin'
 gem 'require_all'
+gem 'inflector'
 
 gem 'simplecov'
 gem 'rspec'

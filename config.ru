@@ -3,6 +3,6 @@ if defined?(ActiveRecord::Migrator) && ActiveRecord::Migrator.needs_migration?
 end
 
 use Rack::MethodOverride
-use Rack::Static, :root => 'public', :urls => ['/images', '/stylesheets']
+use Rack::Static, :root => 'public', :urls => ["/images","/javascripts","/stylesheets"]
 # use MyControllers
 run ApplicationController

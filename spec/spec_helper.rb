@@ -11,6 +11,12 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   config.include Rack::Test::Methods
   config.order = 'default'
+  
+  DatabaseCleaner.strategy = :truncation
+
+  config.before(:each) do
+    DatabaseCleaner.clean
+  end
 end
 
 def app

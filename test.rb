@@ -1,6 +1,3 @@
-require 'json'
-require 'open-uri'
-
 class TestAPI
   @@base_url = "http://api.football-data.org/v1"
 
