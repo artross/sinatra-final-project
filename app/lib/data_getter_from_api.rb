@@ -62,11 +62,12 @@ class DataGetterFromAPI
 
   def self.load_league_teams(league_id)
   	self.get_league_teams(league_id).each do |team|
-  	# if !Team.find_by(name: team["name"]) then
-  	#   newTeam = Team.create(team)
-  	#   newTeam.leagues << League.find(league_id)
-  	#   newTeam.save
-  	# end
+  	  # if !Team.find_by(name: team["name"]) then
+  	  #   newTeam = Team.create(team)
+  	  #   newTeam.leagues << League.find(league_id)
+  	  #   newTeam.save
+  	  # end
+    end
   end
 
   def self.load_leagues
