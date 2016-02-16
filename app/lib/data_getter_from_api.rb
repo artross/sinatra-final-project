@@ -1,5 +1,10 @@
 class DataGetterFromAPI
+  ##### CONSTANTS
   @@base_url = "http://api.football-data.org/v1"
+
+  ########################
+  ##### GET DATA FROM API
+  ########################
 
   def self.get_supported_leagues
     # returns an array of hashes: {
@@ -26,15 +31,17 @@ class DataGetterFromAPI
     used_columns = ["id", "caption", "year", "lastUpdated"]
     JSON.load(open("#{@@base_url}/soccerseasons")).each_with_object([]) do |league, arr|
       arr << used_columns.each_with_object({}) do |column, hsh| 
-      	hsh[column.underscore] = league[column] 
+      	if column == "year" then
+      	  hsh[column] = league[column].to_i
+      	elsif column == "lastUpdated" then
+      	  hsh[column.underscore] = DateTime.strptime(league[column], '%Y-%m-%dT%H:%M:%S%z')
+      	else    
+      	  hsh[column.underscore] = league[column] 
+      	end
       end if supported_ids.include?(league["id"])
     end
   end
   
-  def self.extract_team_id_from_url(team_url)
-  	team_url.gsub("#{@@base_url}/teams/", "").to_i
-  end
-
   def self.get_league_teams(league_id)
   	# returns a hash in which we need "teams" record, which is an array of hashes:
   	# {
@@ -49,10 +56,10 @@ class DataGetterFromAPI
   	# also team ID will be extracted from _links["self"]
 
     used_columns = ["id", "name", "shortName", "crestUrl"]
-  	JSON.load(open("#{@@base_url}/soccerseasons/#{league_id}/teams")).each_with_object([]) do |team, arr|
+  	JSON.load(open("#{@@base_url}/soccerseasons/#{league_id}/teams"))["teams"].each_with_object([]) do |team, arr|
       arr << used_columns.each_with_object({}) do |column, hsh| 
       	if column == "id" then
-          hsh[column] = self.extract_team_id_from_url(team["_links"]["self"])
+          hsh[column] = self.extract_team_id_from_url(team["_links"]["self"]["href"])
       	else
       	  hsh[column.underscore] = team[column] 
       	end
@@ -60,27 +67,126 @@ class DataGetterFromAPI
     end
   end 
 
-  def self.load_league_teams(league_id)
-  	self.get_league_teams(league_id).each do |team|
-  	  # if !Team.find_by(name: team["name"]) then
-  	  #   newTeam = Team.create(team)
-  	  #   newTeam.leagues << League.find(league_id)
-  	  #   newTeam.save
-  	  # end
+  def self.get_league_fixtures(league_id, timeframe)
+  	# returns a hash in which we need "fixtures" record, which is an array of hashes:
+  	# {
+    #   _links: hash (with query links to self, league, home and away teams),
+  	#   matchday: int,
+  	#   date: str ("2016-02-20T14:30:00Z"),
+  	#   status: str,
+  	#   homeTeamName: str,
+  	#   awayTeamName: str,
+  	#   result: hash { homeTeamGoals: int, awayTeamGoals: int} (both nulls if not played yet)
+  	# }
+  	# here we need {matchday, date, status, result["homeTeamGoals"], result["awayTeamGoals"]}
+  	# also ID will be extracted from _links["self"]
+  	#   and team IDs - from _links["homeTeam"] and _links["awayTeam"]
+
+    used_columns = ["id", "matchday", "date", "homeTeamID", "awayTeamID", "status", "homeTeamGoals", "awayTeamGoals"]
+  	JSON.load(open("#{@@base_url}/soccerseasons/#{league_id}/fixtures?timeFrame=#{timeframe}"))["fixtures"].each_with_object([]) do |fixture, arr|
+      arr << used_columns.each_with_object({}) do |column, hsh| 
+      	if column == "id" then
+          hsh[column] = self.extract_fixture_id_from_url(fixture["_links"]["self"]["href"])
+      	elsif column == "date" then
+      	  hsh[column] = DateTime.strptime(fixture[column], '%Y-%m-%dT%H:%M:%S%z')
+      	elsif column == "homeTeamID" or column == "awayTeamID" then
+          hsh[column.underscore] = self.extract_team_id_from_url(fixture["_links"]["#{column[0..-3]}"]["href"])
+        elsif column == "homeTeamGoals" or column == "awayTeamGoals" then
+          hsh[column.underscore] = fixture["result"][column]  
+      	else
+      	  hsh[column.underscore] = fixture[column] 
+      	end
+      end 
     end
   end
 
-  def self.load_leagues
-  	self.get_supported_leagues.each do |league|
-  	  # if !League.find(league["id"]) then
-  	  #   League.create(league) !! league.year should be int and league.lastUpdated - datetime
-  	  self.load_league_teams(league["id"])
-  	  # end
-  	end
-  end
+  ########################
+  ##### TOP LEVEL METHODS
+  ########################
 
   def self.initialize_db
   	self.load_leagues
+  	self.load_teams
+  end
+
+  def self.load_fixtures
+    self.load_scheduled_games
+    self.load_results
+  end
+
+  ########################
+  ##### LEVEL 1 METHODS
+  ########################
+
+  def self.load_leagues
+  	self.get_supported_leagues.each do |league|
+  	  League.create(league) unless League.find_by(id: league["id"])
+  	end
+  end
+
+  def self.load_teams
+  	self.get_supported_leagues.each do |league|
+      self.load_league_teams(league["id"]) if League.find_by(id: league["id"])
+    end
+  end
+
+  def self.load_scheduled_games
+  	self.get_supported_leagues.each do |league|
+  	  self.load_league_scheduled_games(league["id"])
+  	end
+  end
+
+  def self.load_results
+  	self.get_supported_leagues.each do |league|
+  	  self.load_league_results(league["id"])
+  	end
+  end
+
+  ########################
+  ##### LEVEL 2 METHODS
+  ########################
+
+  def self.load_league_teams(league_id)
+  	self.get_league_teams(league_id).each do |team|
+  	  unless Team.find_by(id: team["id"]) then
+  	    new_team = Team.new(team)
+  	    new_team.leagues << League.find(league_id)
+  	    new_team.save
+  	  end
+    end
+  end
+
+  def self.load_league_scheduled_games(league_id)
+  	self.get_league_fixtures(league_id, "n14").each do |fixture|
+  	  unless Fixture.find_by(id: fixture["id"]) then
+  	  	new_fixture = Fixture.new(fixture)
+  	  	new_fixture.league = League.find_by(id: league_id)
+  	  	new_fixture.save
+  	  end
+  	end
+  end
+
+  def self.load_league_results(league_id)
+  	self.get_league_fixtures(league_id, "p3").each do |fixture|
+  	  f = Fixture.find_by(id: fixture["id"])
+  	  unless f.home_team_goals && f.away_team_goals then
+  	  	f.home_team_goals = fixture["home_team_goals"]
+  	  	f.away_team_goals = fixture["away_team_goals"]
+  	  	f.save
+  	  end
+  	end
+  end
+
+  ########################
+  ##### SERVICE METHODS
+  ########################
+
+  def self.extract_team_id_from_url(url)
+  	url.gsub("#{@@base_url}/teams/", "").to_i
+  end
+
+  def self.extract_fixture_id_from_url(url)
+  	url.gsub("#{@@base_url}/fixtures/", "").to_i
   end
 
 end
