@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 4) do
+ActiveRecord::Schema.define(version: 6) do
 
   create_table "fixtures", force: :cascade do |t|
     t.integer  "league_id"
@@ -43,10 +43,31 @@ ActiveRecord::Schema.define(version: 4) do
     t.integer "team_id",   null: false
   end
 
+  create_table "predictions", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "fixture_id"
+    t.integer  "home_team_goals"
+    t.integer  "away_team_goals"
+    t.integer  "prediction_points"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "predictions", ["fixture_id"], name: "index_predictions_on_fixture_id"
+  add_index "predictions", ["user_id"], name: "index_predictions_on_user_id"
+
   create_table "teams", force: :cascade do |t|
     t.string   "name"
     t.string   "short_name"
     t.string   "crest_url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string   "name"
+    t.string   "password"
+    t.integer  "prediction_points"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

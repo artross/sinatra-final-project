@@ -1,10 +1,10 @@
 class ApplicationController < Sinatra::Base
 
-  set :views, File.expand_path('../views', __FILE__)
+  set :views, Proc.new { File.join(root, "../views") }
 
   enable :sessions, :method_override
   set :session_secret, "mex"
 
   register Sinatra::ActiveRecordExtension
-  
+
 end
