@@ -10,6 +10,7 @@ class PredictorController < ApplicationController
   get '/index' do
   	@current_user = User.find_by(id: session[:id])
   	@current_users_place = TableHelper.find_place_by_id(session[:id])
+  	@all_predictors = TableHelper.all_predictors
   	erb :'general/index.html'
   end
 

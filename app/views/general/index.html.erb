@@ -9,14 +9,16 @@
   	<th>Prophet's name</th>
     <th>Points</th>
   </tr>
-  <% User.select("id, name, prediction_points")
-         .where("prediction_points >= 0")
-         .order("prediction_points DESC, name")
-         .each_with_index do |user, index| %>
+  <% @all_predictors.each_with_index do |user, index| %>
     <tr>
       <td><%= index + 1 %></td>
       <td><a href=<%= "/results/#{user.id}" %>><%= user.name %></a></td>
       <td><%= user.prediction_points %></td>
     </tr>
   <% end %>
+  <tr>
+  	<td><%= @all_predictors.size + 1 %></td>
+  	<td>Other users</td>
+  	<td>0</td>
+  </tr>
 </table>  
