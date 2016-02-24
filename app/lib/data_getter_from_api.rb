@@ -76,13 +76,13 @@ class DataGetterFromAPI
   	#   status: str,
   	#   homeTeamName: str,
   	#   awayTeamName: str,
-  	#   result: hash { homeTeamGoals: int, awayTeamGoals: int} (both nulls if not played yet)
+  	#   result: hash { goalsHomeTeam: int, goalsAwayTeam: int} (both nulls if not played yet)
   	# }
-  	# here we need {matchday, date, status, result["homeTeamGoals"], result["awayTeamGoals"]}
+  	# here we need {matchday, date, status, result["goalsHomeTeam"], result["goalsAwayTeam"]}
   	# also ID will be extracted from _links["self"]
   	#   and team IDs - from _links["homeTeam"] and _links["awayTeam"]
 
-    used_columns = ["id", "matchday", "date", "homeTeamID", "awayTeamID", "status", "homeTeamGoals", "awayTeamGoals"]
+    used_columns = ["id", "matchday", "date", "homeTeamID", "awayTeamID", "status", "goalsHomeTeam", "goalsAwayTeam"]
   	JSON.load(open("#{@@base_url}/soccerseasons/#{league_id}/fixtures?timeFrame=#{timeframe}"))["fixtures"].each_with_object([]) do |fixture, arr|
       arr << used_columns.each_with_object({}) do |column, hsh| 
       	if column == "id" then
@@ -91,8 +91,10 @@ class DataGetterFromAPI
       	  hsh[column] = DateTime.strptime(fixture[column], '%Y-%m-%dT%H:%M:%S%z')
       	elsif column == "homeTeamID" or column == "awayTeamID" then
           hsh[column.underscore] = self.extract_team_id_from_url(fixture["_links"]["#{column[0..-3]}"]["href"])
-        elsif column == "homeTeamGoals" or column == "awayTeamGoals" then
-          hsh[column.underscore] = fixture["result"][column]  
+        elsif column == "goalsHomeTeam" then
+          hsh["home_team_goals"] = fixture["result"][column]  
+        elsif column == "goalsAwayTeam" then
+          hsh["away_team_goals"] = fixture["result"][column]  
       	else
       	  hsh[column.underscore] = fixture[column] 
       	end
@@ -132,13 +134,15 @@ class DataGetterFromAPI
 
   def self.load_scheduled_games
   	self.get_supported_leagues.each do |league|
-  	  self.load_league_scheduled_games(league["id"])
+  	  res = self.load_league_scheduled_games(league["id"])
+  	  puts "#{league["caption"]}: #{res}"
   	end
   end
 
   def self.load_results
   	self.get_supported_leagues.each do |league|
-  	  self.load_league_results(league["id"])
+  	  res = self.load_league_results(league["id"])
+  	  puts "#{league["caption"]}: #{res}"
   	end
   end
 
@@ -157,24 +161,31 @@ class DataGetterFromAPI
   end
 
   def self.load_league_scheduled_games(league_id)
+    fixtures_loaded = 0
   	self.get_league_fixtures(league_id, "n14").each do |fixture|
   	  unless Fixture.find_by(id: fixture["id"]) then
   	  	new_fixture = Fixture.new(fixture)
   	  	new_fixture.league = League.find_by(id: league_id)
   	  	new_fixture.save
+  	  	fixtures_loaded += 1
   	  end
   	end
+  	fixtures_loaded
   end
 
   def self.load_league_results(league_id)
+    results_loaded = 0
   	self.get_league_fixtures(league_id, "p3").each do |fixture|
   	  f = Fixture.find_by(id: fixture["id"])
   	  unless f.home_team_goals && f.away_team_goals then
   	  	f.home_team_goals = fixture["home_team_goals"]
   	  	f.away_team_goals = fixture["away_team_goals"]
+  	  	f.status = fixture["status"]
   	  	f.save
+  	  	results_loaded += 1
   	  end
   	end
+  	results_loaded
   end
 
   ########################

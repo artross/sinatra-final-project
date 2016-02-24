@@ -1,5 +1,9 @@
 <form action="register" method="POST">
-  <p>Please select your user name (login) and password</p>
+  <% if session[:reg_failed] then %>
+    <p style="color: red"><%= session[:reg_fail_message] %></p>
+  <% else %>
+    <p>Please select your user name (login) and password</p>
+  <% end %>  
   <table>
   	<tr>
   	  <td><label for="login">Login: </label></td>

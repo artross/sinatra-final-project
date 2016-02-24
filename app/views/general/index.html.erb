@@ -1,0 +1,22 @@
+<h2>Welcome, <%= @current_user.name %>!</h2>
+<a href="/logout">Log Out</a>
+<a href="/predictions">MAKE PREDICTIONS</a>
+<a href=<%= "/results/#{@current_user.id}" %>>SEE RESULTS</a>
+<p>Table of Prophets (your place: <%= TableHelper.find_place_by_id(session[:id]) %>)</p>
+<table>
+  <th>
+  	<td>Place</td>
+  	<td>Prophet's name</td>
+    <td>Points</td>
+  </th>
+  <% User.select("id, name, prediction_points")
+         .where("prediction_points >= 0")
+         .order("prediction_points DESC, name")
+         .each_with_index do |user, index| %>
+    <tr>
+      <td><%= index + 1 %></td>
+      <td><a href=<%= "/results/#{user.id}" %>><%= user.name %></a></td>
+      <td><%= user.prediction_points %></td>
+    </tr>
+  <% end %>
+</table>  

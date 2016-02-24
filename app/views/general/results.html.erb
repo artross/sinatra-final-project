@@ -1,0 +1,9 @@
+<p>You are logged in as: <b><%= @current_user.name %></b>. <a href="/logout">Log Out</a></p>
+<a href="/index">MAIN PAGE</a>
+<a href=<%= "/predictions" %>>MAKE PREDICTIONS</a>
+<form action="/results" method="POST">
+  <p>Show results for last <input type="number" name="days" value="7"> days</p>
+
+  <p>User: <input type="text" name="user_name" value= <%= "#{@selected_user.name}" %>></p> 
+  <input type="submit" value="Apply Filters">
+</form>
