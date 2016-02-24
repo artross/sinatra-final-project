@@ -2,13 +2,13 @@
 <a href="/logout">Log Out</a>
 <a href="/predictions">MAKE PREDICTIONS</a>
 <a href=<%= "/results/#{@current_user.id}" %>>SEE RESULTS</a>
-<p>Table of Prophets (your place: <%= TableHelper.find_place_by_id(session[:id]) %>)</p>
+<p>Table of Prophets (your place: <%= @current_users_place %>)</p>
 <table>
-  <th>
-  	<td>Place</td>
-  	<td>Prophet's name</td>
-    <td>Points</td>
-  </th>
+  <tr>
+  	<th>Place</th>
+  	<th>Prophet's name</th>
+    <th>Points</th>
+  </tr>
   <% User.select("id, name, prediction_points")
          .where("prediction_points >= 0")
          .order("prediction_points DESC, name")

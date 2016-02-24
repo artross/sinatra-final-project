@@ -1,0 +1,19 @@
+<p>You are logged in as: <b><%= @current_user.name %></b>. <a href="/logout">Log Out</a></p>
+<a href="/index">MAIN PAGE</a>
+<a href=<%= "/results/#{@current_user.id}" %>>SEE RESULTS</a>
+<form action="/predictions" method="POST">
+  <h3>Matches to predict</h3>
+  <table>
+    <% @fixtures_to_predict.each do |f| %>
+      <tr>
+        <td><%= f["date"].slice(0, 10) %></td>
+        <td><%= f["home_team"] %></td>
+        <td><%= f["away_team"] %></td>
+        <td><input type="number" name=<%= "predictions[][home]" %> value=<%= "#{f['home_team_goals']}" %>></td>
+        <td><input type="number" name=<%= "predictions[][away]" %> value=<%= "#{f['away_team_goals']}" %>></td>
+        <td><input type="hidden" name=<%= "predictions[][id]" %> value=<%= f['id'] %>>
+      </tr>  
+    <% end %>
+  </table>
+  <input type="submit" value="Save Predictions">
+</form>
