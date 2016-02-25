@@ -141,8 +141,8 @@ class DataGetterFromAPI
 
   def self.load_results
   	self.get_supported_leagues.each do |league|
-  	  res = self.load_league_results(league["id"])
-  	  puts "#{league["caption"]}: #{res}"
+  	  res, pred = self.load_league_results_update_predictions(league["id"])
+  	  puts "#{league["caption"]}: #{res} (#{pred})"
   	end
   end
 
@@ -173,8 +173,9 @@ class DataGetterFromAPI
   	fixtures_loaded
   end
 
-  def self.load_league_results(league_id)
+  def self.load_league_results_update_predictions(league_id)
     results_loaded = 0
+    predictions_updated = 0
   	self.get_league_fixtures(league_id, "p3").each do |fixture|
   	  f = Fixture.find_by(id: fixture["id"])
   	  unless f.home_team_goals && f.away_team_goals then
@@ -183,9 +184,37 @@ class DataGetterFromAPI
   	  	f.status = fixture["status"]
   	  	f.save
   	  	results_loaded += 1
+        predictions_updated += self.update_predictions_by_fixture(f.id)
   	  end
   	end
-  	results_loaded
+  	[results_loaded, predictions_updated]
+  end
+
+  ########################
+  ##### LEVEL 3 METHODS
+  ########################
+
+  def self.update_predictions_by_fixture(fixture_id)
+    predictions_updated = 0
+    f = Fixture.find_by(id: fixture_id)
+    f_diff = f.home_team_goals - f.away_team_goals
+    Prediction.where(fixture_id: fixture_id).each do |p|
+      p_diff = p.home_team_goals - p.away_team_goals
+      if f_diff == p_diff then
+        p.prediction_points = f.home_team_goals == p.home_team_goals ? 3 : 2
+      else
+        p.prediction_points = f_diff * p_diff > 0 ? 1 : 0
+      end
+      p.save
+      predictions_updated += 1
+      
+      if p.prediction_points > 0 then 
+        u = User.find_by(id: p.user_id)
+        u.prediction_points += p.prediction_points
+        u.save
+      end    
+    end
+    predictions_updated
   end
 
   ########################
