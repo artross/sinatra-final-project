@@ -17,12 +17,21 @@ class PredictorController < ApplicationController
   get '/results/:user_id' do
   	@current_user = User.find_by(id: session[:id])
   	@selected_user = User.find_by(id: params[:user_id])
+  	@days = params[:days] == nil ? 7 : params[:days]
+  	@league_id = params[:league_id] == nil ? -1 : params[:league_id]
+  	@not_found = params[:not_found] == "true"
+  	@results = TableHelper.results_with_filters({days: @days, league_id: params[:league_id], user_id: @selected_user.id})
   	erb :'general/results.html'
   end
 
   post '/results' do
-    binding.pry
-  	# get user_id, league and number of days from params[], then redirect to /results/:user_id 
+  	@current_user = User.find_by(id: session[:id])
+  	@selected_user = User.find_by(name: params[:username])
+  	if @selected_user == nil then
+  	  redirect to("/results/#{@current_user.id}?not_found=true")
+  	else
+  	  redirect to("/results/#{@selected_user.id}?days=#{params[:days]}&league_id=#{params[:league_id]}") 
+  	end
   end
 
   get '/predictions' do

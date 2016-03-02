@@ -27,3 +27,10 @@ namespace :load_from_api do
   	DataGetterFromAPI.load_results
   end
 end
+
+namespace :whenever do
+  desc "updating 'whenever' output settings"
+  task :update_jobs do
+    sh %{bundle exec whenever --update-crontab FootballPredictions}
+  end
+end

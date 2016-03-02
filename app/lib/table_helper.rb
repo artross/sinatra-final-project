@@ -17,6 +17,7 @@ class TableHelper
   
   def self.fixtures_to_predict(user_id)
     conn = ActiveRecord::Base.connection
+    deadline = (Time.now + 60*60).strftime("%Y-%m-%d %H:%M:%S")
     query = <<-SQL
       SELECT
         f.id
@@ -31,7 +32,7 @@ class TableHelper
         INNER JOIN teams away_t ON f.away_team_id = away_t.id
         LEFT OUTER JOIN predictions p ON f.id = p.fixture_id AND p.user_id = #{conn.quote(user_id)}
       WHERE
-        f.home_team_goals IS NULL
+        f.date > #{conn.quote(deadline)}
       ORDER BY
         f.date, f.id
     SQL
@@ -42,32 +43,50 @@ class TableHelper
   def self.results_with_filters(params)
     conn = ActiveRecord::Base.connection
 
-    params[:days] = 7 if params[:days] <= 0
-    date_condition_str = (Time.now - 60*60*24*params[:days]).strftime("%Y-%m-%d 00:00:00")
+    if params[:days] == nil then
+      days = 7
+    else
+      days = params[:days].to_i
+      days = 7 if days <= 0
+    end
+
+    if params[:league_id] == nil then
+      league_id = -1
+    else
+      league_id = params[:league_id].to_i
+    end
+      
+    date_condition_str = (Time.now - 60*60*24*days).strftime("%Y-%m-%d 00:00:00")
     
     query = <<-SQL
       SELECT
         f.date
-        , home_t.short_name
-        , away_t.short_name
-        , f.home_team_goals
-        , f.away_team_goals
-        , p.home_team_goals
-        , p.away_team_goals
-        , p.prediction_points
+        , home_t.short_name home_team
+        , away_t.short_name away_team
+        , f.home_team_goals home_team_goals
+        , f.away_team_goals away_team_goals
+        , p.home_team_goals home_team_pred
+        , p.away_team_goals away_team_pred
+        , p.prediction_points result
+        , case 
+            when p.prediction_points = 3 then "LightGreen" 
+            when p.prediction_points = 2 then "PaleGoldenRod" 
+            when p.prediction_points = 1 then "LightPink" 
+            else "Lavender" 
+          end color
       FROM
         predictions p
         INNER JOIN fixtures f ON p.fixture_id = f.id
         INNER JOIN teams home_t ON f.home_team_id = home_t.id
         INNER JOIN teams away_t ON f.away_team_id = away_t.id
       WHERE
-        p.user_id = #{conn.quote(User.find_by(name: params[:username]).id)}
+        p.user_id = #{conn.quote(params[:user_id])}
         AND f.date >= #{conn.quote(date_condition_str)}
         AND f.home_team_goals IS NOT NULL
     SQL
 
-    if params[:league_id] > 0 then
-      query += "AND f.league_id = #{conn.quote(params[:league_id])}"
+    if league_id > 0 then
+      query += "AND f.league_id = #{conn.quote(league_id)}"
     end  
 
     qres = ActiveRecord::Base.connection.execute(query)

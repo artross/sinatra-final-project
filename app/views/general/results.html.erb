@@ -2,16 +2,27 @@
 <a href="/index">MAIN PAGE</a>
 <a href="/predictions">MAKE PREDICTIONS</a>
 <form action="/results" method="POST">
-  <p>Show results for last <input type="number" name="days" value="7"> days</p>
+  <p>Show results for last <input type="number" name="days" value=<%= "#{@days}" %>> days</p>
   <p>League: 
   	<select name="league_id">
-  	  <option value="-1">All</option>	
+  	  <% if @league_id.to_i == -1 then %>
+  	    <option value="-1" selected>All</option>	
+  	  <% else %>
+  	    <option value="-1">All</option>	
+  	  <% end %>
       <% supported_leagues.each do |league| %>
-        <option value=<%= league.id %>><%= league.caption %></option>
+        <% if league.id == @league_id.to_i then %>
+          <option value=<%= league.id %> selected><%= league.caption %></option>
+        <% else %>
+          <option value=<%= league.id %>><%= league.caption %></option>
+        <% end %>  
       <% end %>
   	</select>
   </p>
-  <p>User: <input type="text" name="username" value= <%= "#{@selected_user.name}" %>></p> 
+  <p>User: <input type="text" name="username" value=<%= "#{@selected_user.name}" %>></p> 
+  <% if @not_found then %>
+    <p style="color:red">Last entered username was not found in the database</p>
+  <% end %>
   <input type="submit" value="Apply Filters">
 </form>
 <table>
@@ -23,14 +34,14 @@
   	<th>Pred.</th>
   	<th>Result</th>
   </tr>
-  <% TableHelper.results_with_filters({days: params[:days], league_id: params[:league_id], username: params[:username]}).each do |res| %>
-    <tr style=<%= "background-color:#{res.color}" %>>
-      <td><%= res.date %></td>
-      <td><%= res.home_team %></td>
-      <td><%= res.away_team %></td>
-      <td><%= res.score %></td>
-      <td><%= res.prediction %></td>
-      <td><%= res.result %></td>
+  <% @results.each do |res| %>
+    <tr style=<%= "background-color:#{res['color']}" %>>
+      <td><%= res["date"].slice(0, 10) %></td>
+      <td><%= res["home_team"] %></td>
+      <td><%= res["away_team"] %></td>
+      <td><%= "#{res['home_team_goals']}:#{res['away_team_goals']}" %></td>
+      <td><%= "#{res['home_team_pred']}:#{res['away_team_pred']}" %></td>
+      <td><%= res["result"] %></td>
     </tr>
   <% end %>
 </table>

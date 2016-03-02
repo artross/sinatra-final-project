@@ -133,17 +133,23 @@ class DataGetterFromAPI
   end
 
   def self.load_scheduled_games
-  	self.get_supported_leagues.each do |league|
+  	puts "#{Time.now}: starting 'Scheduled games'"
+    self.get_supported_leagues.each do |league|
   	  res = self.load_league_scheduled_games(league["id"])
   	  puts "#{league["caption"]}: #{res}"
   	end
+    puts "#{Time.now}: completed"
+    puts "----------"
   end
 
   def self.load_results
+    puts "#{Time.now}: starting 'Results'"
   	self.get_supported_leagues.each do |league|
   	  res, pred = self.load_league_results_update_predictions(league["id"])
   	  puts "#{league["caption"]}: #{res} (#{pred})"
   	end
+    puts "#{Time.now}: completed"
+    puts "----------"
   end
 
   ########################
@@ -178,7 +184,7 @@ class DataGetterFromAPI
     predictions_updated = 0
   	self.get_league_fixtures(league_id, "p3").each do |fixture|
   	  f = Fixture.find_by(id: fixture["id"])
-  	  unless f.home_team_goals && f.away_team_goals then
+      if fixture["home_team_goals"] && !f.home_team_goals then
   	  	f.home_team_goals = fixture["home_team_goals"]
   	  	f.away_team_goals = fixture["away_team_goals"]
   	  	f.status = fixture["status"]

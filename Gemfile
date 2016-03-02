@@ -10,6 +10,7 @@ gem 'pry'
 gem 'thin'
 gem 'require_all'
 gem 'inflector'
+gem 'whenever'
 
 gem 'simplecov'
 gem 'rspec'
