@@ -1,9 +1,6 @@
 class PredictorController < ApplicationController
   
   get '/' do
-  	session[:login_failed] = false
-  	session[:reg_failed] = false
-  	session[:reg_fail_message] = ""
   	redirect to(logged_in? ? '/index' : '/login')
   end
 
@@ -19,7 +16,7 @@ class PredictorController < ApplicationController
   	@selected_user = User.find_by(id: params[:user_id])
   	@days = params[:days] == nil ? 7 : params[:days]
   	@league_id = params[:league_id] == nil ? -1 : params[:league_id]
-  	@not_found = params[:not_found] == "true"
+  	@not_found = true if params[:not_found]
   	@results = TableHelper.results_with_filters({days: @days, league_id: params[:league_id], user_id: @selected_user.id})
   	erb :'general/results.html'
   end
@@ -28,7 +25,7 @@ class PredictorController < ApplicationController
   	@current_user = User.find_by(id: session[:id])
   	@selected_user = User.find_by(name: params[:username])
   	if @selected_user == nil then
-  	  redirect to("/results/#{@current_user.id}?not_found=true")
+  	  redirect to("/results/#{@current_user.id}?not_found=1")
   	else
   	  redirect to("/results/#{@selected_user.id}?days=#{params[:days]}&league_id=#{params[:league_id]}") 
   	end
@@ -37,7 +34,7 @@ class PredictorController < ApplicationController
   get '/predictions' do
   	@current_user = User.find_by(id: session[:id])
   	@fixtures_to_predict = TableHelper.fixtures_to_predict(session[:id])
-  	erb :'general/predictions.html'
+    erb :'general/predictions.html'
   end
   
   post '/predictions' do

@@ -1,47 +1,61 @@
-<p>You are logged in as: <b><%= @current_user.name %></b>. <a href="/logout">Log Out</a></p>
-<a href="/index">MAIN PAGE</a>
-<a href="/predictions">MAKE PREDICTIONS</a>
-<form action="/results" method="POST">
-  <p>Show results for last <input type="number" name="days" value=<%= "#{@days}" %>> days</p>
-  <p>League: 
-  	<select name="league_id">
-  	  <% if @league_id.to_i == -1 then %>
-  	    <option value="-1" selected>All</option>	
-  	  <% else %>
-  	    <option value="-1">All</option>	
-  	  <% end %>
-      <% supported_leagues.each do |league| %>
-        <% if league.id == @league_id.to_i then %>
-          <option value=<%= league.id %> selected><%= league.caption %></option>
-        <% else %>
-          <option value=<%= league.id %>><%= league.caption %></option>
-        <% end %>  
-      <% end %>
-  	</select>
-  </p>
-  <p>User: <input type="text" name="username" value=<%= "#{@selected_user.name}" %>></p> 
-  <% if @not_found then %>
-    <p style="color:red">Last entered username was not found in the database</p>
-  <% end %>
-  <input type="submit" value="Apply Filters">
-</form>
-<table>
-  <tr>
-  	<th>Date</th>
-  	<th>Home Team</th>
-  	<th>Away Team</th>
-  	<th>Score</th>
-  	<th>Pred.</th>
-  	<th>Result</th>
-  </tr>
-  <% @results.each do |res| %>
-    <tr style=<%= "background-color:#{res['color']}" %>>
-      <td><%= res["date"].slice(0, 10) %></td>
-      <td><%= res["home_team"] %></td>
-      <td><%= res["away_team"] %></td>
-      <td><%= "#{res['home_team_goals']}:#{res['away_team_goals']}" %></td>
-      <td><%= "#{res['home_team_pred']}:#{res['away_team_pred']}" %></td>
-      <td><%= res["result"] %></td>
-    </tr>
-  <% end %>
-</table>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-12 text-right">
+      <p>You are signed in as: <b><%= @current_user.name %></b>. <a href="/logout">Log Out</a></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-2">    
+      <p><a href="/index">MAIN PAGE</a></p>
+      <p><a href="/predictions">MAKE PREDICTIONS</a></p>
+    </div>
+    <div class="col-xs-10 col-md-4">
+      <form action="/results" method="POST">
+        <p>Show results for last <input type="number" name="days" value=<%= "#{@days}" %>> days</p>
+        <p>League: 
+        	<select name="league_id">
+        	  <% if @league_id.to_i == -1 then %>
+        	    <option value="-1" selected>All</option>	
+        	  <% else %>
+        	    <option value="-1">All</option>	
+        	  <% end %>
+            <% supported_leagues.each do |league| %>
+              <% if league.id == @league_id.to_i then %>
+                <option value=<%= league.id %> selected><%= league.caption %></option>
+              <% else %>
+                <option value=<%= league.id %>><%= league.caption %></option>
+              <% end %>  
+            <% end %>
+        	</select>
+        </p>
+        <p>User: <input type="text" name="username" value=<%= "#{@selected_user.name}" %>></p> 
+        <% if @not_found then %>
+          <p style="color:red">Last entered username was not found in the database</p>
+        <% end %>
+        <input type="submit" value="Apply Filters">
+      </form>
+    </div>
+    <div class="col-xs-12 col-md-6">  
+      <table>
+        <tr>
+        	<th>Date</th>
+        	<th>Home Team</th>
+        	<th>Away Team</th>
+        	<th>Score</th>
+        	<th>Pred.</th>
+        	<th>Result</th>
+        </tr>
+        <% @results.each do |res| %>
+          <tr style=<%= "background-color:#{res['color']}" %>>
+            <td><%= res["date"].slice(0, 10) %></td>
+            <td><%= res["home_team"] %></td>
+            <td><%= res["away_team"] %></td>
+            <td><%= "#{res['home_team_goals']}:#{res['away_team_goals']}" %></td>
+            <td><%= "#{res['home_team_pred']}:#{res['away_team_pred']}" %></td>
+            <td><%= res["result"] %></td>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+  </div>    
+</div>

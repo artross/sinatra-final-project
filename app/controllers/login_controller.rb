@@ -1,18 +1,18 @@
 class LoginController < ApplicationController
 
   get '/login' do
-  	erb :'login/login.html'
+  	@login_failed = true if params[:login_failed]
+    erb :'login/login.html'
   end
 
   post '/login' do
   	if params["submit"] == "Login" then
   	  user = User.find_by(name: params["login"], password: params["password"])
-  	  session[:login_failed] = (user == nil)
   	  if user then
   	  	session[:id] = user.id
   	  	redirect to('/index')
   	  else
-  	  	redirect to('/login')
+  	  	redirect to('/login?login_failed=1')
   	  end
   	else
   	  redirect to('/register')
@@ -20,28 +20,29 @@ class LoginController < ApplicationController
   end
 
   get '/register' do
+    @reg_failed = true if params[:reg_failed]
+    if @reg_failed then
+      if params[:reg_failed] == "1" then
+        @reg_fail_message = "Login can't be empty"
+      elsif params[:reg_failed] == "2" then
+        @reg_fail_message = "Password can't be empty"
+      elsif params[:reg_failed] == "3" then
+        @reg_fail_message = "Password isn't confirmed correctly" 
+      end
+    end   
   	erb :'login/register.html'
   end
 
   post '/register' do
   	if params["login"].strip == "" then
-  	  session[:reg_failed] = true
-  	  session[:reg_fail_message] = "Login can't be empty"
-  	  redirect to('/register')
+  	  redirect to('/register?reg_failed=1')
   	elsif params["password"].strip == "" then
-  	  session[:reg_failed] = true
-  	  session[:reg_fail_message] = "Password can't be empty"
-  	  redirect to('/register')
+  	  redirect to('/register?reg_failed=2')
   	elsif params["password"] != params["confirm"] then   
-  	  session[:reg_failed] = true
-  	  session[:reg_fail_message] = "Password isn't confirmed correctly"
-  	  redirect to('/register')
+  	  redirect to('/register?reg_failed=3')
   	else
   	  user = User.create!(name: params["login"], password: params["password"], prediction_points: 0)
   	  session[:id] = user.id	
-  	  session[:reg_failed] = false
-  	  session[:reg_fail_message] = ""
-  	  session[:login_failed] = false
   	  redirect to('/index')
   	end  
   end

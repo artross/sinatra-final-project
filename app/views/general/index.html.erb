@@ -1,24 +1,36 @@
-<h2>Welcome, <%= @current_user.name %>!</h2>
-<a href="/logout">Log Out</a>
-<a href="/predictions">MAKE PREDICTIONS</a>
-<a href=<%= "/results/#{@current_user.id}" %>>SEE RESULTS</a>
-<p>Table of Prophets (your place: <%= @current_users_place %>)</p>
-<table>
-  <tr>
-  	<th>Place</th>
-  	<th>Prophet's name</th>
-    <th>Points</th>
-  </tr>
-  <% @all_predictors.each_with_index do |user, index| %>
-    <tr>
-      <td><%= index + 1 %></td>
-      <td><a href=<%= "/results/#{user.id}" %>><%= user.name %></a></td>
-      <td><%= user.prediction_points %></td>
-    </tr>
-  <% end %>
-  <tr>
-  	<td><%= @all_predictors.size + 1 %></td>
-  	<td>Other users</td>
-  	<td>0</td>
-  </tr>
-</table>  
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-12 text-right">
+      <p>You are signed in as: <b><%= @current_user.name %></b>. <a href="/logout">Log Out</a></p>
+    </div>
+  </div>
+  <div class="row">  
+    <div class="col-xs-2">  
+      <p><a href="/predictions">MAKE PREDICTIONS</a></p>
+      <p><a href=<%= "/results/#{@current_user.id}" %>>SEE RESULTS</a></p>
+    </div>
+    <div class="col-xs-10">  
+      <h1>Welcome to the Predictorium!</h1>
+      <p>Your current place: <%= @current_users_place %></p>
+      <table>
+        <tr>
+        	<th>Place</th>
+        	<th>Prophet's name</th>
+          <th>Points</th>
+        </tr>
+        <% @all_predictors.each_with_index do |user, index| %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><a href=<%= "/results/#{user.id}" %>><%= user.name %></a></td>
+            <td><%= user.prediction_points %></td>
+          </tr>
+        <% end %>
+        <tr>
+        	<td><%= @all_predictors.size + 1 %></td>
+        	<td>Other users</td>
+        	<td>0</td>
+        </tr>
+      </table> 
+    </div>
+  </div>     
+</div>
