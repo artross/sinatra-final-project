@@ -6,7 +6,7 @@ class LoginController < ApplicationController
   end
 
   post '/login' do
-  	if params["submit"] == "Login" then
+  	if params["submit"] == "Sign in" then
   	  user = User.find_by(name: params["login"], password: params["password"])
   	  if user then
   	  	session[:id] = user.id
@@ -34,17 +34,21 @@ class LoginController < ApplicationController
   end
 
   post '/register' do
-  	if params["login"].strip == "" then
-  	  redirect to('/register?reg_failed=1')
-  	elsif params["password"].strip == "" then
-  	  redirect to('/register?reg_failed=2')
-  	elsif params["password"] != params["confirm"] then   
-  	  redirect to('/register?reg_failed=3')
-  	else
-  	  user = User.create!(name: params["login"], password: params["password"], prediction_points: 0)
-  	  session[:id] = user.id	
-  	  redirect to('/index')
-  	end  
+    if params["submit"] == "Confirm" then
+      if params["login"].strip == "" then
+  	    redirect to('/register?reg_failed=1')
+  	  elsif params["password"].strip == "" then
+  	    redirect to('/register?reg_failed=2')
+  	  elsif params["password"] != params["confirm"] then   
+  	    redirect to('/register?reg_failed=3')
+  	  else
+  	    user = User.create!(name: params["login"], password: params["password"], prediction_points: 0)
+  	    session[:id] = user.id	
+  	    redirect to('/index')
+  	  end 
+    else
+      redirect to('/login')
+    end     
   end
 
   get '/logout' do

@@ -6,8 +6,18 @@
   </div>  
   <div class="row">
     <div class="col-xs-2">
-      <p><a href="/index">MAIN PAGE</a></p>
-      <p><a href=<%= "/results/#{@current_user.id}" %>>SEE RESULTS</a></p>
+      <p>
+        <a href="/index">
+          <span class="glyphicon glyphicon-align-justify"> 
+          MAIN PAGE
+        </a>
+      </p>
+      <p>
+        <a href=<%= "/results/#{@current_user.id}" %>>
+          <span class="glyphicon glyphicon-search">           
+          SEE RESULTS
+        </a>
+      </p>
     </div>
     <div class="col-xs-10">    
       <form action="/predictions" method="POST">
