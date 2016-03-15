@@ -15,17 +15,17 @@ class PredictorController < ApplicationController
   	@current_user = User.find_by(id: session[:id])
   	@selected_user = User.find_by(id: params[:user_id])
   	@days = params[:days] == nil ? 7 : params[:days]
-  	@league_id = params[:league_id] == nil ? -1 : params[:league_id]
   	@not_found = true if params[:not_found]
-  	@results = TableHelper.results_with_filters({days: @days, league_id: params[:league_id], user_id: @selected_user.id})
+    @username_not_found = params[:username] if @not_found
+  	@results = TableHelper.results_with_filters({days: @days, user_id: @selected_user.id})
   	erb :'general/results.html'
   end
 
   post '/results' do
   	@current_user = User.find_by(id: session[:id])
   	@selected_user = User.find_by(name: params[:username])
-  	if @selected_user == nil then
-  	  redirect to("/results/#{@current_user.id}?not_found=1")
+    if @selected_user == nil then
+  	  redirect to("/results/#{@current_user.id}?not_found=1&username=#{params[:username]}")
   	else
   	  redirect to("/results/#{@selected_user.id}?days=#{params[:days]}&league_id=#{params[:league_id]}") 
   	end
@@ -68,8 +68,8 @@ class PredictorController < ApplicationController
 
   def supported_leagues
   	current_year = Time.now.year
-    arr = League.where("year = ?", current_year.to_s)
-    arr = League.where("year = ?", (current_year - 1).to_s) if arr.size == 0
+    arr = League.where("year = ?", current_year.to_s).order(:id)
+    arr = League.where("year = ?", (current_year - 1).to_s).order(:id) if arr == nil || arr.size == 0
   end
 
 end

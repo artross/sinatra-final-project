@@ -1,33 +1,62 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-xs-12 text-right">
-      <p>You are signed in as: <b><%= @current_user.name %></b>. <a href="/logout">Log Out</a></p>
+<div class="navbar navbar-inverse navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href='/'>
+        <span class="glyphicon glyphicon-eye-open"> 
+        The Predictorium [
+          <span class="glyphicon glyphicon-user"> 
+          <%= "#{@current_user.name}" %>
+        ]
+      </a>
+      
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle Navigation</span>
+        <span class="glyphicon glyphicon-align-justify">
+      </button>
     </div>
-  </div>
-  <div class="row">  
-    <div class="col-xs-2">  
-      <p>
+    <ul class="nav navbar-nav navbar-right collapse navbar-collapse">
+      <li>
         <a href="/predictions">
           <span class="glyphicon glyphicon-pencil"> 
-          MAKE PREDICTIONS
+          Predictions
         </a>
-      </p>
-      <p>
+      </li>  
+      <li>
         <a href=<%= "/results/#{@current_user.id}" %>>
           <span class="glyphicon glyphicon-search"> 
-          SEE RESULTS
+          Results
         </a>
-      </p>
+      </li>
+      <li>
+        <a href="/logout">
+          <span class="glyphicon glyphicon-log-out"> 
+          Log Out
+        </a>
+      </li>
+    </ul>  
+  </div>
+</div>
+
+<div class="container">
+  <div class="alert alert-info lead text-center">
+    Welcome to <strong>The Predictorium!</strong>
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading panel-title">
+      Standings
     </div>
-    <div class="col-xs-10">  
-      <h1>Welcome to the Predictorium!</h1>
-      <p>Your current place: <%= @current_users_place %></p>
-      <table>
-        <tr>
-        	<th>Place</th>
-        	<th>Prophet's name</th>
-          <th>Points</th>
-        </tr>
+    
+    <div class="panel-body table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr class="success">
+        	  <th>#</th>
+        	  <th>Predictor</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        
         <% @all_predictors.each_with_index do |user, index| %>
           <tr>
             <td><%= index + 1 %></td>
@@ -35,6 +64,7 @@
             <td><%= user.prediction_points %></td>
           </tr>
         <% end %>
+        
         <tr>
         	<td><%= @all_predictors.size + 1 %></td>
         	<td>Other users</td>

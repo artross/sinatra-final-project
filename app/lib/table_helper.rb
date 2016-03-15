@@ -22,6 +22,7 @@ class TableHelper
       SELECT
         f.id
         , f.date
+        , f.league_id
         , home_t.short_name home_team
         , away_t.short_name away_team
         , p.home_team_goals
@@ -34,7 +35,7 @@ class TableHelper
       WHERE
         f.date > #{conn.quote(deadline)}
       ORDER BY
-        f.date, f.id
+        f.league_id, f.date, f.id
     SQL
     
     conn.execute(query)
@@ -50,30 +51,19 @@ class TableHelper
       days = 7 if days <= 0
     end
 
-    if params[:league_id] == nil then
-      league_id = -1
-    else
-      league_id = params[:league_id].to_i
-    end
-      
     date_condition_str = (Time.now - 60*60*24*days).strftime("%Y-%m-%d 00:00:00")
     
     query = <<-SQL
       SELECT
         f.date
+        , f.league_id
         , home_t.short_name home_team
         , away_t.short_name away_team
         , f.home_team_goals home_team_goals
         , f.away_team_goals away_team_goals
         , p.home_team_goals home_team_pred
         , p.away_team_goals away_team_pred
-        , p.prediction_points result
-        , case 
-            when p.prediction_points = 3 then "LightGreen" 
-            when p.prediction_points = 2 then "PaleGoldenRod" 
-            when p.prediction_points = 1 then "LightPink" 
-            else "Lavender" 
-          end color
+        , p.prediction_points points
       FROM
         predictions p
         INNER JOIN fixtures f ON p.fixture_id = f.id
@@ -84,10 +74,6 @@ class TableHelper
         AND f.date >= #{conn.quote(date_condition_str)}
         AND f.home_team_goals IS NOT NULL
     SQL
-
-    if league_id > 0 then
-      query += "AND f.league_id = #{conn.quote(league_id)}"
-    end  
 
     qres = ActiveRecord::Base.connection.execute(query)
   end
