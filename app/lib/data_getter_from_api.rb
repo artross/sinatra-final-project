@@ -1,7 +1,7 @@
 class DataGetterFromAPI
   ##### CONSTANTS
   @@base_url = "http://api.football-data.org/v1"
-
+  @@token = "dca072f3d0c4423dbc794490830c472f"
   ########################
   ##### GET DATA FROM API
   ########################
@@ -29,7 +29,7 @@ class DataGetterFromAPI
 
     supported_ids = [394, 398, 399, 401]
     used_columns = ["id", "caption", "year", "lastUpdated"]
-    JSON.load(open("#{@@base_url}/soccerseasons")).each_with_object([]) do |league, arr|
+    JSON.load(open("#{@@base_url}/soccerseasons", "X-Auth-Token" => "#{@@token}")).each_with_object([]) do |league, arr|
       arr << used_columns.each_with_object({}) do |column, hsh| 
       	if column == "year" then
       	  hsh[column] = league[column].to_i
@@ -56,7 +56,7 @@ class DataGetterFromAPI
   	# also team ID will be extracted from _links["self"]
 
     used_columns = ["id", "name", "shortName", "crestUrl"]
-  	JSON.load(open("#{@@base_url}/soccerseasons/#{league_id}/teams"))["teams"].each_with_object([]) do |team, arr|
+  	JSON.load(open("#{@@base_url}/soccerseasons/#{league_id}/teams", "X-Auth-Token" => "#{@@token}"))["teams"].each_with_object([]) do |team, arr|
       arr << used_columns.each_with_object({}) do |column, hsh| 
       	if column == "id" then
           hsh[column] = self.extract_team_id_from_url(team["_links"]["self"]["href"])
@@ -83,7 +83,7 @@ class DataGetterFromAPI
   	#   and team IDs - from _links["homeTeam"] and _links["awayTeam"]
 
     used_columns = ["id", "matchday", "date", "homeTeamID", "awayTeamID", "status", "goalsHomeTeam", "goalsAwayTeam"]
-  	JSON.load(open("#{@@base_url}/soccerseasons/#{league_id}/fixtures?timeFrame=#{timeframe}"))["fixtures"].each_with_object([]) do |fixture, arr|
+  	JSON.load(open("#{@@base_url}/soccerseasons/#{league_id}/fixtures?timeFrame=#{timeframe}", "X-Auth-Token" => "#{@@token}"))["fixtures"].each_with_object([]) do |fixture, arr|
       arr << used_columns.each_with_object({}) do |column, hsh| 
       	if column == "id" then
           hsh[column] = self.extract_fixture_id_from_url(fixture["_links"]["self"]["href"])

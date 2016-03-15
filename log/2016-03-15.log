@@ -191,3 +191,35 @@ OpenURI::HTTPError: 429
 Tasks: TOP => load_from_api:results
 (See full trace by running task with --trace)
 2016-03-15 19:30:04 +0300: starting 'Results'
+rake aborted!
+OpenURI::HTTPError: 429 
+/Users/mex/learn-co/labs/sinatra-final-project/app/lib/data_getter_from_api.rb:32:in `get_supported_leagues'
+/Users/mex/learn-co/labs/sinatra-final-project/app/lib/data_getter_from_api.rb:147:in `load_results'
+/Users/mex/learn-co/labs/sinatra-final-project/Rakefile:27:in `block (2 levels) in <top (required)>'
+Tasks: TOP => load_from_api:results
+(See full trace by running task with --trace)
+2016-03-15 20:00:04 +0300: starting 'Results'
+rake aborted!
+OpenURI::HTTPError: 429 
+/Users/mex/learn-co/labs/sinatra-final-project/app/lib/data_getter_from_api.rb:32:in `get_supported_leagues'
+/Users/mex/learn-co/labs/sinatra-final-project/app/lib/data_getter_from_api.rb:147:in `load_results'
+/Users/mex/learn-co/labs/sinatra-final-project/Rakefile:27:in `block (2 levels) in <top (required)>'
+Tasks: TOP => load_from_api:results
+(See full trace by running task with --trace)
+2016-03-15 20:30:05 +0300: starting 'Results'
+rake aborted!
+OpenURI::HTTPError: 429 
+/Users/mex/learn-co/labs/sinatra-final-project/app/lib/data_getter_from_api.rb:32:in `get_supported_leagues'
+/Users/mex/learn-co/labs/sinatra-final-project/app/lib/data_getter_from_api.rb:147:in `load_results'
+/Users/mex/learn-co/labs/sinatra-final-project/Rakefile:27:in `block (2 levels) in <top (required)>'
+Tasks: TOP => load_from_api:results
+(See full trace by running task with --trace)
+2016-03-15 23:00:05 +0300: starting 'Results'
+rake aborted!
+OpenURI::HTTPError: 429 
+/Users/mex/learn-co/labs/sinatra-final-project/app/lib/data_getter_from_api.rb:32:in `get_supported_leagues'
+/Users/mex/learn-co/labs/sinatra-final-project/app/lib/data_getter_from_api.rb:147:in `load_results'
+/Users/mex/learn-co/labs/sinatra-final-project/Rakefile:27:in `block (2 levels) in <top (required)>'
+Tasks: TOP => load_from_api:results
+(See full trace by running task with --trace)
+2016-03-15 23:30:04 +0300: starting 'Results'
