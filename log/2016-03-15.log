@@ -223,3 +223,11 @@ OpenURI::HTTPError: 429
 Tasks: TOP => load_from_api:results
 (See full trace by running task with --trace)
 2016-03-15 23:30:04 +0300: starting 'Results'
+2016-03-16 00:00:04 +0300: starting 'Results'
+1. Bundesliga 2015/16: 0 (0)
+Premier League 2015/16: 0 (0)
+Primera Division 2015/16: 0 (0)
+Serie A 2015/16: 0 (0)
+2016-03-16 00:00:05 +0300: completed
+----------
+[write] crontab file updated
