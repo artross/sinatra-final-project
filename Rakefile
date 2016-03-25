@@ -34,3 +34,10 @@ namespace :whenever do
     sh %{bundle exec whenever --update-crontab FootballPredictions}
   end
 end
+
+namespace :heroku
+  desc "one task to rule'em all"
+  task :do_all do
+    1
+  end
+end
