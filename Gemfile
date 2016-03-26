@@ -1,5 +1,8 @@
 source "http://rubygems.org"
 
+# Heroku likes to know my ruby version
+ruby '2.2.4'
+
 gem 'sinatra'
 gem 'activerecord', :require => 'active_record'
 gem 'sinatra-activerecord', :require => 'sinatra/activerecord'
