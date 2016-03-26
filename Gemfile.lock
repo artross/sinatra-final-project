@@ -48,6 +48,7 @@ GEM
     passenger (5.0.24)
       rack
       rake (>= 0.8.1)
+    pg (0.18.2)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -85,7 +86,6 @@ GEM
       activerecord (>= 3.2)
       sinatra (~> 1.0)
     slop (3.6.0)
-    sqlite3 (1.3.11)
     thread_safe (0.3.5)
     tilt (2.0.2)
     tzinfo (1.2.2)
@@ -104,6 +104,7 @@ DEPENDENCIES
   database_cleaner!
   inflector
   passenger
+  pg
   pry
   rack-test
   rake
@@ -112,7 +113,6 @@ DEPENDENCIES
   simplecov
   sinatra
   sinatra-activerecord
-  sqlite3
   whenever
 
 BUNDLED WITH

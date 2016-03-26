@@ -35,7 +35,7 @@ namespace :whenever do
   end
 end
 
-namespace :heroku
+namespace :heroku do
   desc "one task to rule'em all"
   task :do_all do
     1
