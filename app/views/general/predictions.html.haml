@@ -1,0 +1,62 @@
+.navbar.navbar-inverse.navbar-static-top
+  .container-fluid
+    .navbar-header
+      %a.navbar-brand{href: '/'}
+        %span.glyphicon.glyphicon-eye-open= " The Predictorium ["
+        %span.glyphicon.glyphicon-user= " #{@current_user.name}]"
+      %button.navbar-toggle{type: "button", 'data-toggle' => "collapse", 'data-target' => ".navbar-collapse"}
+        %span.sr-only Toggle Navigation
+        %span.glyphicon.glyphicon-align-justify
+    %ul.nav.navbar-nav.navbar-right.collapse.navbar-collapse
+      %li
+        %a{href: "/predictions"}
+          %span.glyphicon.glyphicon-pencil= " Predictions"
+      %li
+        %a{href: "/results/#{@current_user.id}"}
+          %span.glyphicon.glyphicon-search= " Results"
+      %li
+        %a{href: "/logout"}
+          %span.glyphicon.glyphicon-log-out= " Log Out"
+.container
+  .alert.alert-info.lead.text-center Upcoming Fixtures
+  %form{action: "/predictions", method: "POST"}
+    -# Tabs
+    %ul.nav.nav-tabs
+      - @active_leagues.each_with_index do |league, i| 
+        -# Using capture_haml for DRY code
+        - league_anchor = capture_haml do
+          %a{'data-toggle' => "tab", href: "#league#{league.id}"}= league.caption
+        -# End of capture
+        - if i == 0 then 
+          %li.active
+            = league_anchor
+        - else
+          %li
+            = league_anchor
+    -# Content for the Tabs
+    .tab-content
+      - @active_leagues.each_with_index do |league, i| 
+        -# Using capture_haml for DRY code
+        - fixtures_table = capture_haml do
+          .table-responsive
+            %table.table.table-bordered.table-striped
+              - @fixtures_to_predict.select{ |f| f["league_id"].to_i == league.id }.each do |f|
+                %tr
+                  %td= f["date"].slice(0, 10)
+                  %td= f["home_team"]
+                  %td= f["away_team"]
+                  %td
+                    %input.form-control{type: "number", name: "predictions[][home]", value: "#{f['home_team_goals']}"}
+                  %td
+                    %input.form-control{type: "number", name: "predictions[][away]", value: "#{f['away_team_goals']}"}
+                  %td.hidden
+                    %input{type: "hidden", name: "predictions[][id]", value: f['id']}
+        -# End of capture
+        - if i == 0 then 
+          .tab-pane.fade.in.active{id: "league#{league.id}"}
+            = fixtures_table
+        - else 
+          .tab-pane.fade{id: "league#{league.id}"}
+            = fixtures_table
+    -# Submit button
+    %input.btn.btn-success{type: "submit", value: "Save Predictions"}

@@ -2,7 +2,7 @@ class LoginController < ApplicationController
 
   get '/login' do
   	@login_failed = true if params[:login_failed]
-    erb :'login/login.html'
+    haml :'login/login.html'
   end
 
   post '/login' do
@@ -14,7 +14,7 @@ class LoginController < ApplicationController
   	  else
   	  	redirect to('/login?login_failed=1')
   	  end
-  	else
+  	elsif params["submit"] == "Register" then
   	  redirect to('/register')
   	end
   end
@@ -30,7 +30,7 @@ class LoginController < ApplicationController
         @reg_fail_message = "Password isn't confirmed correctly" 
       end
     end   
-  	erb :'login/register.html'
+  	haml :'login/register.html'
   end
 
   post '/register' do
@@ -46,7 +46,7 @@ class LoginController < ApplicationController
   	    session[:id] = user.id	
   	    redirect to('/index')
   	  end 
-    else
+    elsif params["submit"] == "Back" then
       redirect to('/login')
     end     
   end

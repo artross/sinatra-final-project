@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 
 # Heroku likes to know my ruby version
-ruby '2.2.4'
+ruby '2.2.2'
 
 gem 'sinatra'
 gem 'activerecord', :require => 'active_record'
@@ -13,6 +13,7 @@ gem 'pry'
 gem 'require_all'
 gem 'inflector'
 gem 'whenever'
+gem 'haml'
 
 gem 'simplecov'
 gem 'rspec'

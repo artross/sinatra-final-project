@@ -1,20 +1,5 @@
-class TableHelper
-  def self.all_predictors
-  	# all users whos prediction_points are positive
-  	User.select("id, name, prediction_points")
-  	    .where("prediction_points > 0")
-  	    .order("prediction_points desc, name")
-  end
+class DataMiner
 
-  def self.find_place_by_id(user_id)
-  	collection = self.all_predictors
-  	collection.each_with_index do |e, i|
-  	  return (i + 1) if e.id == user_id
-  	end 
-  	
-  	return collection.size + 1
-  end
-  
   def self.fixtures_to_predict(user_id)
     conn = ActiveRecord::Base.connection
     deadline = (Time.now + 60*60).strftime("%Y-%m-%d %H:%M:%S")

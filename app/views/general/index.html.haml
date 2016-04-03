@@ -1,0 +1,44 @@
+.navbar.navbar-inverse.navbar-static-top
+  .container-fluid
+    .navbar-header
+      %a.navbar-brand{href: '/'}
+        %span.glyphicon.glyphicon-eye-open= " The Predictorium ["
+        %span.glyphicon.glyphicon-user= " #{@current_user.name}]"
+      
+      %button.navbar-toggle{type: "button", 'data-toggle' => "collapse", 'data-target' => ".navbar-collapse"}
+        %span.sr-only Toggle Navigation
+        %span.glyphicon.glyphicon-align-justify
+    %ul.nav.navbar-nav.navbar-right.collapse.navbar-collapse
+      %li
+        %a{href: "/predictions"}
+          %span.glyphicon.glyphicon-pencil= " Predictions"
+      %li
+        %a{href: "/results/#{@current_user.id}"}
+          %span.glyphicon.glyphicon-search= " Results"
+      %li
+        %a{href: "/logout"}
+          %span.glyphicon.glyphicon-log-out= " Log Out"
+
+.container
+  .alert.alert-info.lead.text-center Welcome to <strong>The Predictorium!</strong>
+  .alert.text-center The place where you can test your football prediction skills against other people
+  .panel.panel-default
+    .panel-heading.panel-title Standings
+    .panel-body.table-responsive
+      %table.table.table-hover
+        %thead
+          %tr.success
+            %th #
+            %th Predictor
+            %th Points
+        %tbody
+          - @all_predictors.each_with_index do |user, index|
+            %tr
+              %td= index + 1
+              %td 
+                %a{href: "/results/#{user.id}"}= user.name
+              %td= user.prediction_points
+          %tr
+            %td= @all_predictors.size + 1
+            %td Other users
+            %td 0

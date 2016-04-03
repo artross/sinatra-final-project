@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 6) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "fixtures", force: :cascade do |t|
     t.integer  "league_id"
     t.integer  "matchday"
@@ -26,9 +29,9 @@ ActiveRecord::Schema.define(version: 6) do
     t.datetime "updated_at"
   end
 
-  add_index "fixtures", ["away_team_id"], name: "index_fixtures_on_away_team_id"
-  add_index "fixtures", ["home_team_id"], name: "index_fixtures_on_home_team_id"
-  add_index "fixtures", ["league_id"], name: "index_fixtures_on_league_id"
+  add_index "fixtures", ["away_team_id"], name: "index_fixtures_on_away_team_id", using: :btree
+  add_index "fixtures", ["home_team_id"], name: "index_fixtures_on_home_team_id", using: :btree
+  add_index "fixtures", ["league_id"], name: "index_fixtures_on_league_id", using: :btree
 
   create_table "leagues", force: :cascade do |t|
     t.string   "caption"
@@ -53,8 +56,8 @@ ActiveRecord::Schema.define(version: 6) do
     t.datetime "updated_at"
   end
 
-  add_index "predictions", ["fixture_id"], name: "index_predictions_on_fixture_id"
-  add_index "predictions", ["user_id"], name: "index_predictions_on_user_id"
+  add_index "predictions", ["fixture_id"], name: "index_predictions_on_fixture_id", using: :btree
+  add_index "predictions", ["user_id"], name: "index_predictions_on_user_id", using: :btree
 
   create_table "teams", force: :cascade do |t|
     t.string   "name"

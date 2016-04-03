@@ -1,0 +1,17 @@
+.container-fluid
+  - if @login_failed then 
+    .row.alert.alert-danger
+      %p
+        %span.glyphicon.glyphicon-exclamation-sign Wrong combination of username and password!
+  .row   
+    %h2
+      Please sign in:
+  .row
+    %form{action: "login", method: "POST"}
+      .well.well-lg
+        %input{type: "text", name: "login", placeholder: "Username", autofocus: true}
+        %br
+        %input{type: "password", name: "password", placeholder: "Password"}
+      %input.btn.btn-default{type: "submit", name: "submit", value: "Sign in"}
+      %input.btn.btn-primary{type: "submit", name: "submit", value: "Register"}
+  

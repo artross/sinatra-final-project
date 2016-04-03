@@ -34,6 +34,8 @@ GEM
     coderay (1.1.0)
     diff-lcs (1.2.5)
     docile (1.1.5)
+    haml (4.0.7)
+      tilt
     i18n (0.7.0)
     inflector (0.0.1)
     json (1.8.3)
@@ -48,7 +50,7 @@ GEM
     passenger (5.0.24)
       rack
       rake (>= 0.8.1)
-    pg (0.18.2)
+    pg (0.18.4)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -102,6 +104,7 @@ DEPENDENCIES
   activerecord
   capybara
   database_cleaner!
+  haml
   inflector
   passenger
   pg

@@ -38,6 +38,11 @@ end
 namespace :heroku do
   desc "one task to rule'em all"
   task :do_all do
-    1
+    if League.active_leagues.count == 0 then
+      DataGetterFromAPI.load_leagues
+      DataGetterFromAPI.load_teams
+    end
+    DataGetterFromAPI.load_scheduled_games
+    DataGetterFromAPI.load_results
   end
 end
