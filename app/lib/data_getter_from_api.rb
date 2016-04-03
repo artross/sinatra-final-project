@@ -184,7 +184,7 @@ class DataGetterFromAPI
     predictions_updated = 0
   	self.get_league_fixtures(league_id, "p3").each do |fixture|
   	  f = Fixture.find_by(id: fixture["id"])
-      if fixture["home_team_goals"] && !f.home_team_goals then
+      if f && fixture["home_team_goals"] && !f.home_team_goals then
   	  	f.home_team_goals = fixture["home_team_goals"]
   	  	f.away_team_goals = fixture["away_team_goals"]
   	  	f.status = fixture["status"]
