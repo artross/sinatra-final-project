@@ -46,7 +46,6 @@ class PredictorController < ApplicationController
   end
   
   post '/predictions' do
-    binding.pry
     params[:predictions].each do |p|
       unless fixture_expired?(p[:id].to_i) || p[:home] == "" || p[:away] == "" then
       	prediction = Prediction.find_by(fixture_id: p[:id].to_i, user_id: session[:id])
