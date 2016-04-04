@@ -21,12 +21,16 @@
 
 set :output, "./log/#{Time.now.strftime("%Y-%m-%d")}.log"
 
-every 30.minutes do
-  rake "load_from_api:results"
-end
+# every 30.minutes do
+#   rake "load_from_api:results"
+# end
 
-every 1.day, :at => '11:15 am' do
-  rake "load_from_api:scheduled_games"
+# every 1.day, :at => '11:15 am' do
+#   rake "load_from_api:scheduled_games"
+# end
+
+every 1.hour do
+  rake "heroku:do_all"
 end	
 
 every 1.day, :at => '00:01 am' do
